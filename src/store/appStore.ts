@@ -2,10 +2,11 @@ import { createVedro } from "vedro"
 import type { IAppState } from "./types"
 
 const initialState: IAppState = {
-	activeLayers: [],
-	error: null,
+	activeLayers: ["temperature"],
+	selectedTimes: "10:00",
 	isLoading: false,
-	selectedTimes: "",
+	error: null,
+	layerData: [],
 }
 
 export const {
