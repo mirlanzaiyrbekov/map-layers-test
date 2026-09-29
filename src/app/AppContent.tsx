@@ -1,5 +1,6 @@
 import { useAppSelector } from "../store/appStore"
 
+import { AnalyticsChart } from "@/features/analytics/components/AnalyticsChart"
 import { LayerPanel } from "@/features/layers/components/LayerPoints"
 import { LayerDataLoader } from "../features/layers/components/LayerDataLoader"
 import { MapView } from "../features/map/components/MapView"
@@ -26,7 +27,7 @@ export const AppContent = () => {
 					</header>
 
 					<LayerPanel />
-
+					<AnalyticsChart />
 					<div className="relative">
 						<MapView />
 
