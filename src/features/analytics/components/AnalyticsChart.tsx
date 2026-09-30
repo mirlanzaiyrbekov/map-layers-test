@@ -2,6 +2,7 @@ import {
 	CartesianGrid,
 	Line,
 	LineChart,
+	ReferenceLine,
 	ResponsiveContainer,
 	Tooltip,
 	XAxis,
@@ -10,13 +11,20 @@ import {
 
 import { layerConfig } from "@/features/layers/config"
 import { timePoints } from "@/features/timeline/timePoint"
-import { useAppSelector } from "../../../store/appStore"
-
+import { setWorkerUrl } from "maplibre-gl"
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url"
+import { useAppDispatch, useAppSelector } from "../../../store/appStore"
 export function AnalyticsChart() {
-	const { layerData, activeLayerIds } = useAppSelector((state) => ({
-		layerData: state.layerData,
-		activeLayerIds: state.activeLayers,
-	}))
+	setWorkerUrl(workerUrl)
+	const dispatch = useAppDispatch()
+
+	const { layerData, activeLayerIds, selectedTimeId } = useAppSelector(
+		(state) => ({
+			layerData: state.layerData,
+			activeLayerIds: state.activeLayers,
+			selectedTimeId: state.selectedTimes,
+		}),
+	)
 
 	const activeLayers = layerConfig.filter((layer) =>
 		activeLayerIds.includes(layer.id),
@@ -51,13 +59,32 @@ export function AnalyticsChart() {
 
 			<div className="h-75">
 				<ResponsiveContainer width="100%" height="100%">
-					<LineChart data={chartData}>
+					<LineChart
+						data={chartData}
+						onClick={(state) => {
+							const label = state?.activeLabel
+
+							const time = timePoints.find((item) => item.description === label)
+
+							if (!time) return
+
+							dispatch("selectedTimes", time.id)
+						}}
+					>
 						<CartesianGrid strokeDasharray="3 3" />
 
 						<XAxis dataKey="time" />
 
 						<YAxis />
-
+						<ReferenceLine
+							x={
+								timePoints.find((time) => time.id === selectedTimeId)
+									?.description
+							}
+							stroke="#2563eb"
+							strokeDasharray="4 4"
+							label="Выбранное время"
+						/>
 						<Tooltip />
 
 						{activeLayers.map((layer) => (

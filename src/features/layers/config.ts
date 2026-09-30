@@ -6,23 +6,20 @@ export const layerConfig: ILayer[] = [
 		name: "Температура",
 		type: "temperature",
 		unit: "°C",
+		color: "rgba(239, 68, 68, 0.7)",
 	},
 	{
 		id: "wind",
 		name: "Ветер",
 		type: "wind",
 		unit: "м/с",
+		color: "rgba(59, 130, 246, 0.7)",
 	},
 	{
 		id: "solar",
 		name: "Солнечная радиация",
 		type: "solar",
 		unit: "Вт/м²",
-	},
-	{
-		id: "humidity",
-		name: "Влажность",
-		type: "humidity",
-		unit: "%",
+		color: "rgba(234, 179, 8, 0.7)",
 	},
 ]

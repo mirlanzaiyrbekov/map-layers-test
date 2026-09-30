@@ -4,37 +4,37 @@ import { timePoints } from "../timePoint"
 export function Timeline() {
 	const dispatch = useAppDispatch()
 
-	const { selectedTimeId } = useAppSelector((state) => ({
-		selectedTimeId: state.selectedTimes,
-	}))
+	const selectedTimeId = useAppSelector((state) => state.selectedTimes)
 
-	const selectTime = (timeId: string) => {
-		dispatch("selectedTimes", timeId)
+	const selectedIndex = timePoints.findIndex(
+		(time) => time.id === selectedTimeId,
+	)
+
+	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const index = Number(event.target.value)
+
+		dispatch("selectedTimes", timePoints[index].id)
 	}
 
 	return (
 		<section className="rounded-xl bg-white p-4 shadow">
 			<h2 className="mb-4 text-lg font-semibold">Временная шкала</h2>
 
-			<div className="flex items-center justify-between gap-2">
-				{timePoints.map((time) => {
-					const isSelected = selectedTimeId === time.id
+			<div className="space-y-3">
+				<input
+					type="range"
+					min={0}
+					max={timePoints.length - 1}
+					value={selectedIndex}
+					onChange={handleChange}
+					className="w-full"
+				/>
 
-					return (
-						<button
-							key={time.id}
-							type="button"
-							onClick={() => selectTime(time.id)}
-							className={`rounded-lg px-3 py-2 text-sm transition ${
-								isSelected
-									? "bg-blue-600 text-white"
-									: "bg-gray-100 text-gray-700 hover:bg-gray-200"
-							}`}
-						>
-							{time.description}
-						</button>
-					)
-				})}
+				<div className="flex justify-between text-sm text-gray-500">
+					{timePoints.map((time) => (
+						<span key={time.id}>{time.description}</span>
+					))}
+				</div>
 			</div>
 		</section>
 	)
