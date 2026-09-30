@@ -27,7 +27,6 @@ export const AppContent = () => {
 					</header>
 
 					<LayerPanel />
-					<AnalyticsChart />
 					<div className="relative">
 						<MapView />
 
@@ -45,6 +44,7 @@ export const AppContent = () => {
 					</div>
 
 					<Timeline />
+					<AnalyticsChart />
 				</div>
 			</main>
 		</>

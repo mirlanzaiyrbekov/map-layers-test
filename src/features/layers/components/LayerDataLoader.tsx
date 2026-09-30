@@ -1,16 +1,23 @@
-import { useEffect, type FC } from "react"
+import { useEffect } from "react"
 
 import { loadLayerData } from "@/store/loadLoayerData"
-import { useAppSelector } from "../../../store/appStore"
+import { useAppDispatch, useAppSelector } from "../../../store/appStore"
 
-export const LayerDataLoader: FC = () => {
+export function LayerDataLoader() {
+	const dispatch = useAppDispatch()
+
 	const { activeLayerIds, selectedTimeId } = useAppSelector((state) => ({
 		activeLayerIds: state.activeLayers,
 		selectedTimeId: state.selectedTimes,
 	}))
 
 	useEffect(() => {
-		void loadLayerData()
+		void loadLayerData({
+			activeLayerIds,
+			selectedTimeId,
+			dispatch,
+		})
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeLayerIds, selectedTimeId])
 
 	return null

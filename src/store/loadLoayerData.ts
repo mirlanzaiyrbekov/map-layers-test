@@ -1,26 +1,31 @@
 import { layerConfig } from "@/features/layers/config"
 import { timePoints } from "@/features/timeline/timePoint"
 import { fetchLayerData } from "../services/data/mockApi"
-import { useAppStore } from "./appStore"
+import type { IAppState } from "./types"
 
 let requestId = 0
 
-export async function loadLayerData() {
-	const currentRequestId = ++requestId
-	const store = useAppStore()
+interface LoadLayerDataParams {
+	activeLayerIds: IAppState["activeLayers"]
+	selectedTimeId: IAppState["selectedTimes"]
+	dispatch: (state: Partial<IAppState>) => void
+}
 
-	const state = store.get()
+export async function loadLayerData({
+	activeLayerIds,
+	selectedTimeId,
+	dispatch,
+}: LoadLayerDataParams) {
+	const currentRequestId = ++requestId
 
 	const activeLayers = layerConfig.filter((layer) =>
-		state.activeLayers.includes(layer.id),
+		activeLayerIds.includes(layer.id),
 	)
 
-	const selectedTime = timePoints.find(
-		(time) => time.id === state.selectedTimes,
-	)
+	const selectedTime = timePoints.find((time) => time.id === selectedTimeId)
 
 	if (!selectedTime || activeLayers.length === 0) {
-		store.dispatch({
+		dispatch({
 			isLoading: false,
 			layerData: [],
 			error: null,
@@ -29,21 +34,23 @@ export async function loadLayerData() {
 		return
 	}
 
-	store.dispatch({
+	dispatch({
 		isLoading: true,
 		error: null,
 	})
 
 	try {
 		const results = await Promise.all(
-			activeLayers.map((layer) => fetchLayerData(layer, selectedTime)),
+			activeLayers.flatMap((layer) =>
+				timePoints.map((time) => fetchLayerData(layer, time)),
+			),
 		)
 
 		if (currentRequestId !== requestId) {
 			return
 		}
 
-		store.dispatch({
+		dispatch({
 			layerData: results,
 			isLoading: false,
 		})
@@ -52,7 +59,7 @@ export async function loadLayerData() {
 			return
 		}
 
-		store.dispatch({
+		dispatch({
 			isLoading: false,
 			error: "Не удалось загрузить данные",
 		})

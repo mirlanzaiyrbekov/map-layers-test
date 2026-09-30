@@ -8,30 +8,41 @@ import {
 	YAxis,
 } from "recharts"
 
+import { layerConfig } from "@/features/layers/config"
 import { timePoints } from "@/features/timeline/timePoint"
-import type { FC } from "react"
-import type { JSX } from "react/jsx-dev-runtime"
 import { useAppSelector } from "../../../store/appStore"
 
-export const AnalyticsChart: FC = (): JSX.Element => {
-	const { layerData } = useAppSelector((state) => ({
+export function AnalyticsChart() {
+	const { layerData, activeLayerIds } = useAppSelector((state) => ({
 		layerData: state.layerData,
+		activeLayerIds: state.activeLayers,
 	}))
 
+	const activeLayers = layerConfig.filter((layer) =>
+		activeLayerIds.includes(layer.id),
+	)
+
 	const chartData = timePoints.map((time) => {
-		const dataForTime = layerData.find((item) => item.time.id === time.id)
-
-		const values = dataForTime?.data.map((item) => item.value) ?? []
-
-		const average =
-			values.length > 0
-				? values.reduce((sum, value) => sum + value, 0) / values.length
-				: 0
-
-		return {
+		const point: Record<string, string | number> = {
 			time: time.description,
-			value: Number(average.toFixed(1)),
 		}
+
+		activeLayers.forEach((layer) => {
+			const data = layerData.find(
+				(item) => item.layerId === layer.id && item.time.id === time.id,
+			)
+
+			const values = data?.data.map((item) => item.value) ?? []
+
+			const average =
+				values.length > 0
+					? values.reduce((sum, value) => sum + value, 0) / values.length
+					: 0
+
+			point[layer.id] = Number(average.toFixed(1))
+		})
+
+		return point
 	})
 
 	return (
@@ -49,12 +60,17 @@ export const AnalyticsChart: FC = (): JSX.Element => {
 
 						<Tooltip />
 
-						<Line
-							type="monotone"
-							dataKey="value"
-							stroke="currentColor"
-							strokeWidth={2}
-						/>
+						{activeLayers.map((layer) => (
+							<Line
+								key={layer.id}
+								type="monotone"
+								dataKey={layer.id}
+								name={layer.name}
+								stroke="currentColor"
+								strokeWidth={2}
+								dot={false}
+							/>
+						))}
 					</LineChart>
 				</ResponsiveContainer>
 			</div>
