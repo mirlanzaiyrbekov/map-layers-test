@@ -92,8 +92,8 @@ export function AnalyticsChart() {
 								key={layer.id}
 								type="monotone"
 								dataKey={layer.id}
-								name={layer.name}
-								stroke="currentColor"
+								name={`${layer.name} (${layer.unit})`}
+								stroke={layer.color}
 								strokeWidth={2}
 								dot={false}
 							/>

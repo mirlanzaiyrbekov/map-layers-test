@@ -1,3 +1,4 @@
+import { layerConfig } from "@/features/layers/config"
 import type { ILayerData } from "./data"
 
 export function layerDataToGeoJson(layerData: ILayerData) {
@@ -13,6 +14,10 @@ export function layerDataToGeoJson(layerData: ILayerData) {
 				layerId: layerData.layerId,
 				value: item.value,
 				timeId: layerData.time.id,
+				color:
+					layerConfig.find((layer) => layer.id === layerData.layerId)?.color ??
+					"rgba(107, 114, 128, 0.7)",
+				radius: Math.max(10, Math.min(25, item.value / 2 + 10)),
 			},
 		})),
 	}

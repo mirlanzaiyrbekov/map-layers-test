@@ -13,12 +13,22 @@ export function Timeline() {
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const index = Number(event.target.value)
 
-		dispatch("selectedTimes", timePoints[index].id)
+		const time = timePoints[index]
+
+		if (!time) return
+
+		dispatch("selectedTimes", time.id)
 	}
 
 	return (
 		<section className="rounded-xl bg-white p-4 shadow">
-			<h2 className="mb-4 text-lg font-semibold">Временная шкала</h2>
+			<div className="mb-4 flex items-center justify-between">
+				<h2 className="text-lg font-semibold">Временная шкала</h2>
+
+				<span className="rounded-md bg-gray-100 px-3 py-1 text-sm font-medium">
+					{timePoints[selectedIndex]?.description}
+				</span>
+			</div>
 
 			<div className="space-y-3">
 				<input
@@ -27,7 +37,7 @@ export function Timeline() {
 					max={timePoints.length - 1}
 					value={selectedIndex}
 					onChange={handleChange}
-					className="w-full"
+					className="w-full cursor-pointer"
 				/>
 
 				<div className="flex justify-between text-sm text-gray-500">
